@@ -1,0 +1,11 @@
+Rapport de séance (17/01/19)
+
+Pendant cette séance on a recu les capteurs, la nouvelle carte arduino uno, le condensateur ainsi que l'interrupteur.
+On a donc refait tous les branchements en inserant aussi l'interrupteur. 
+ 
+Vue de dessus
+ 
+Vue de dessous 
+
+Sauf qu'àprès avoir téléverser notre algorithme les deux moteurs ne fonctionnaient pas à cause des fils qui se sont au fur et à mesure détachés. J'ai dû donc resouder les fils des moteurs et ça a bien fonctionné cette fois-ci.
+J'ai éssayé de mettre la vidéo sur le site sauf que ça dépassait les 25mB autorisés.
