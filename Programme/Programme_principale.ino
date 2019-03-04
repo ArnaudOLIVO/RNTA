@@ -8,7 +8,7 @@ int distance;
 
 //--MOTEUR A--
 int ENA=10;
-//Connecté à Arduino pin9 (sortie PWM)
+//Connecté à Arduino pin10 (sortie PWM)
 int IN1=5;
 //Connecté à Arduino pin4
 int IN2=4;
@@ -34,7 +34,7 @@ int valDe=0;
 //Moteur pas à pas 
 #include<Stepper.h>
 const int nombrePas= 32*64;
-Stepper MoteurPaP(nombrePas, 2, 4, 3, 5);
+Stepper MoteurPaP(nombrePas, 17, 15, 16, 14);
 
 void setup() {
   // put your setup code here, to run once:
@@ -60,8 +60,8 @@ void setup() {
 
   // Direction du Moteur B
   //NB : en sens inverse du moteurA
-  digitalWrite(IN3,LOW);
-  digitalWrite(IN4,HIGH);
+  digitalWrite(IN3,HIGH);
+  digitalWrite(IN4,LOW);
 
   // Bluetooth et Serial
   //pinMode(14,OUTPUT);
@@ -76,8 +76,9 @@ void setup() {
   pinMode(derriere,INPUT);
 
   //Moteur Pas à pas
-  MoteurPaP.setSpeed(1);
+  MoteurPaP.setSpeed(8);
 
+  delay(1000);
 }
 
 
@@ -91,32 +92,48 @@ void loop() {
     delay(50);}
 
 
+valG=digitalRead(gauche);
+valD=digitalRead(droite);
+valDe=digitalRead(derriere);
    //Capteur infrarouge
-  if(valG==0 or valD==0 or valDe==0){
+  if(valG==1 or valD==1 or valDe==1){
     analogWrite(ENA,0);
     analogWrite(ENB,0);
-  }
-  else {
- 
-  //EN Avant
-  if (Data=='C') {
-    //Direction du Moteur A
-    digitalWrite(IN1,LOW);
-    digitalWrite(IN2,HIGH);
-    // Direction du Moteur B
-    //NB : en sens inverse du moteurA
-    digitalWrite(IN3,HIGH);
-    digitalWrite(IN4,LOW);  }
-  
-    //En Arrière 
-  if (Data=='c') {
+
+    // marche arrière pour sortir du mauvais pas
     //Direction du Moteur A
     digitalWrite(IN1,HIGH);
     digitalWrite(IN2,LOW);
     // Direction du Moteur B
     //NB : en sens inverse du moteurA
-    digitalWrite(IN3,LOW);
-    digitalWrite(IN4,HIGH);}
+    digitalWrite(IN3,HIGH);
+    digitalWrite(IN4,LOW);
+    analogWrite(ENA,255);
+    analogWrite(ENB,255);
+    Serial.println("Help");
+    delay(10);
+  }
+  else {
+ 
+  //EN Avant
+//  if (Data=='C') {
+  //  //Direction du Moteur A
+    //digitalWrite(IN1,LOW);
+ //   digitalWrite(IN2,HIGH);
+    // Direction du Moteur B
+    //NB : en sens inverse du moteurA
+  //  digitalWrite(IN3,HIGH);
+    //digitalWrite(IN4,LOW);  }
+  
+    //En Arrière 
+ // if (Data=='c') {
+ //   //Direction du Moteur A
+ //   digitalWrite(IN1,HIGH);
+   // digitalWrite(IN2,LOW);
+    // Direction du Moteur B
+    //NB : en sens inverse du moteurA
+   // digitalWrite(IN3,LOW);
+ //   digitalWrite(IN4,HIGH);}
   
   //Moteur PWM 
   if (Data=='A') {
@@ -125,36 +142,65 @@ void loop() {
     delay(10); }
 
   //Avancer tout droit 
-  if (Data=='U') {
+  if (Data=='F') {
+    //Direction du Moteur A
+    digitalWrite(IN1,LOW);
+    digitalWrite(IN2,HIGH);
+    // Direction du Moteur B
+    //NB : en sens inverse du moteurA
+    digitalWrite(IN3,LOW);
+    digitalWrite(IN4,HIGH);
     analogWrite(ENA,PWM);
     analogWrite(ENB,PWM);
+    Serial.println("F");
     delay(10); }
 
   //Tourner à Droite 
   if (Data=='R') {
     analogWrite(ENA,PWM);
     analogWrite(ENB,0);
-    delay(10); }
+    Serial.println("R");
+    delay(10); 
+    }
 
   //Tourner à Gauche 
   if (Data=='L') {
     analogWrite(ENA,0);
     analogWrite(ENB,PWM);
-    delay(10); }
+    Serial.println("L");
+    delay(10); 
+    }
+  
 
+  
+  // Vers l'arrière
+  if (Data=='B') {
+    //Direction du Moteur A
+    digitalWrite(IN1,HIGH);
+    digitalWrite(IN2,LOW);
+    // Direction du Moteur B
+    //NB : en sens inverse du moteurA
+    digitalWrite(IN3,HIGH);
+    digitalWrite(IN4,LOW);
+    analogWrite(ENA,PWM);
+    analogWrite(ENB,PWM);
+    Serial.println("B");
+    delay(10);
   }
   // Affichage 
   BlueT.print(String("*D"+String(PWM)+"*"));
 
 
+
   //Moteur Pas à pas
   if (Data=='P') {
-    MoteurPaP.step(nombrePas);
-    delay(500);
-    MoteurPaP.step(-nombrePas);
-    delay(500);
-    }
+    MoteurPaP.step((nombrePas/360)*280);
+    delay(1000);
+    MoteurPaP.step(-(nombrePas/360)*280);
+    delay(1000);
+  }
 
 
 
+}
 }
